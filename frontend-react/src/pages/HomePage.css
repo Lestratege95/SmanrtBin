@@ -1,0 +1,27 @@
+.home-page {
+  min-height: 100vh;
+  background-color: #f5f6fa;
+}
+
+.home-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+@media screen and (max-width: 768px) {
+  .home-content {
+    padding: 10px;
+  }
+  
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+} 

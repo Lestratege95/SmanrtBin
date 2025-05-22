@@ -1,0 +1,99 @@
+.sensors-page {
+  min-height: 100vh;
+  background-color: #f5f6fa;
+}
+
+.sensors-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sensors-title {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.sensors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.sensor-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.sensor-card:hover {
+  transform: translateY(-5px);
+}
+
+.sensor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sensor-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.sensor-status {
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: white;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.sensor-details {
+  color: #34495e;
+}
+
+.sensor-details p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.sensor-details strong {
+  color: #2c3e50;
+}
+
+.battery-indicator {
+  margin-top: 15px;
+}
+
+.battery-bar {
+  width: 100%;
+  height: 8px;
+  background: #ecf0f1;
+  border-radius: 4px;
+  margin: 5px 0;
+  overflow: hidden;
+}
+
+.battery-level {
+  height: 100%;
+  background: #3498db;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+@media screen and (max-width: 768px) {
+  .sensors-content {
+    padding: 10px;
+  }
+  
+  .sensors-grid {
+    grid-template-columns: 1fr;
+  }
+} 

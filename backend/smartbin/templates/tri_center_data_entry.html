@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Enregistrement des données du centre de tri</h2>
+    
+    <!-- Formulaire de sélection du centre de tri -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Sélection du centre de tri</h5>
+        </div>
+        <div class="card-body">
+            <select id="triCenterSelect" class="form-select">
+                <option value="">Sélectionnez un centre de tri</option>
+                {% for center in tri_centers %}
+                <option value="{{ center.id }}">{{ center.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Formulaire d'enregistrement des flux de déchets -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Nouveau flux de déchets</h5>
+        </div>
+        <div class="card-body">
+            <form id="wasteFlowForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="wasteType" class="form-label">Type de déchet</label>
+                        <select id="wasteType" class="form-select" required>
+                            <option value="">Sélectionnez un type</option>
+                            <option value="plastic">Plastique</option>
+                            <option value="glass">Verre</option>
+                            <option value="paper">Papier</option>
+                            <option value="metal">Métal</option>
+                            <option value="organic">Organique</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="quantity" class="form-label">Quantité (kg)</label>
+                        <input type="number" class="form-control" id="quantity" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="recyclingRate" class="form-label">Taux de valorisation (%)</label>
+                        <input type="number" class="form-control" id="recyclingRate" min="0" max="100" step="0.01" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="processingDate" class="form-label">Date de traitement</label>
+                        <input type="datetime-local" class="form-control" id="processingDate" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="smartBin" class="form-label">Bac intelligent (optionnel)</label>
+                    <select id="smartBin" class="form-select">
+                        <option value="">Sélectionnez un bac</option>
+                        {% for bin in smart_bins %}
+                        <option value="{{ bin.id }}">Bac #{{ bin.id }} - {{ bin.location }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="anomalyDetected">
+                        <label class="form-check-label" for="anomalyDetected">
+                            Anomalie détectée
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Commentaire</label>
+                    <textarea class="form-control" id="comment" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des flux récents -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Flux récents</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Quantité (kg)</th>
+                            <th>Taux de valorisation</th>
+                            <th>Anomalie</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentFlows">
+                        <!-- Les données seront chargées dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('wasteFlowForm');
+    const triCenterSelect = document.getElementById('triCenterSelect');
+    const recentFlowsTable = document.getElementById('recentFlows');
+
+    // Charger les flux récents
+    function loadRecentFlows() {
+        const centerId = triCenterSelect.value;
+        if (!centerId) return;
+
+        fetch(`/api/waste-flows/?tri_center=${centerId}&ordering=-processing_date&limit=10`)
+            .then(response => response.json())
+            .then(data => {
+                recentFlowsTable.innerHTML = data.results.map(flow => `
+                    <tr>
+                        <td>${new Date(flow.processing_date).toLocaleString()}</td>
+                        <td>${flow.waste_type_display}</td>
+                        <td>${flow.quantity_kg}</td>
+                        <td>${flow.recycling_rate}%</td>
+                        <td>${flow.anomaly_detected ? 'Oui' : 'Non'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="viewFlowDetails(${flow.id})">
+                                Détails
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+    }
+
+    // Envoyer le formulaire
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const centerId = triCenterSelect.value;
+        if (!centerId) {
+            alert('Veuillez sélectionner un centre de tri');
+            return;
+        }
+
+        const data = {
+            tri_center: centerId,
+            waste_type: document.getElementById('wasteType').value,
+            quantity_kg: parseFloat(document.getElementById('quantity').value),
+            recycling_rate: parseFloat(document.getElementById('recyclingRate').value),
+            processing_date: document.getElementById('processingDate').value,
+            smart_bin: document.getElementById('smartBin').value || null,
+            anomaly_detected: document.getElementById('anomalyDetected').checked,
+            comment: document.getElementById('comment').value
+        };
+
+        fetch('/api/waste-flows/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Données enregistrées avec succès');
+                form.reset();
+                loadRecentFlows();
+            } else {
+                throw new Error('Erreur lors de l\'enregistrement');
+            }
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    });
+
+    // Charger les flux quand un centre est sélectionné
+    triCenterSelect.addEventListener('change', loadRecentFlows);
+
+    // Fonction utilitaire pour obtenir le token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %} 
