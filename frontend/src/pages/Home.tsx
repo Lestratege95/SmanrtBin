@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Paper, Typography, Box } from '@mui/material';
+import { Paper, Typography, Box } from '@mui/material';
 import { 
   Delete as DeleteIcon,
   LocationOn as LocationIcon,
@@ -28,36 +28,40 @@ const Home = () => {
         Tableau de bord
       </Typography>
       
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, 
+        gap: 3 
+      }}>
+        <Box>
           <StatCard 
             title="Poubelles actives" 
             value="24" 
             icon={<DeleteIcon fontSize="large" />} 
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Box>
+        <Box>
           <StatCard 
             title="Zones couvertes" 
             value="8" 
             icon={<LocationIcon fontSize="large" />} 
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Box>
+        <Box>
           <StatCard 
             title="Alertes en cours" 
             value="3" 
             icon={<WarningIcon fontSize="large" />} 
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Box>
+        <Box>
           <StatCard 
             title="Collectes aujourd'hui" 
             value="12" 
             icon={<ShippingIcon fontSize="large" />} 
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" gutterBottom>

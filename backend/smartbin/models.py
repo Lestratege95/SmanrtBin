@@ -70,6 +70,9 @@ class User(AbstractUser):
             module=module,
             permission=permission
         ).exists()
+    
+    class Meta:
+        app_label = 'smartbin'
 
 class UserProfile(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='profil')

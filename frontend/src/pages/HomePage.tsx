@@ -12,21 +12,21 @@ const HomePage: React.FC = () => {
       location: "Zone A - Entrée principale",
       fillLevel: 75,
       lastUpdated: "2024-03-20 14:30",
-      status: "active"
+      status: "active" as const
     },
     {
       id: 2,
       location: "Zone B - Cafétéria",
       fillLevel: 90,
       lastUpdated: "2024-03-20 14:25",
-      status: "full"
+      status: "full" as const
     },
     {
       id: 3,
       location: "Zone C - Parking",
       fillLevel: 45,
       lastUpdated: "2024-03-20 14:20",
-      status: "active"
+      status: "active" as const
     }
   ];
 

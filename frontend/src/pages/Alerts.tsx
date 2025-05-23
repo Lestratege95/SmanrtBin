@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -12,13 +12,14 @@ import {
   Button,
   IconButton,
   Chip,
-  Grid,
   Card,
   CardContent,
   Tabs,
   Tab,
-  Badge
+  Badge,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
+
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -30,6 +31,7 @@ import {
   CheckCircle as ResolvedIcon,
   NotificationsActive as ActiveIcon
 } from '@mui/icons-material';
+
 
 interface Alert {
   id: number;
@@ -105,7 +107,7 @@ const getTypeIcon = (type: Alert['type']) => {
     case 'other':
       return <InfoIcon />;
     default:
-      return null;
+      return <InfoIcon />;
   }
 };
 
@@ -122,63 +124,62 @@ const getStatusColor = (status: Alert['status']) => {
   }
 };
 
+const StatCard = ({ title, value, color }: { title: string; value: number; color: string }) => (
+  <Card sx={{ height: '100%' }}>
+    <CardContent>
+      <Typography color="text.secondary" gutterBottom>
+        {title}
+      </Typography>
+      <Typography variant="h4" color={color}>
+        {value}
+      </Typography>
+    </CardContent>
+  </Card>
+);
+
 const AlertStats = ({ alerts }: { alerts: Alert[] }) => {
-  const active = alerts.filter(a => a.status === 'active').length;
-  const pending = alerts.filter(a => a.status === 'pending').length;
-  const resolved = alerts.filter(a => a.status === 'resolved').length;
-  const highPriority = alerts.filter(a => a.priority === 'high').length;
+  const counts = useMemo(() => 
+    alerts.reduce((acc, alert) => {
+      if (alert.status === 'active') acc.active++;
+      if (alert.status === 'pending') acc.pending++;
+      if (alert.status === 'resolved') acc.resolved++;
+      if (alert.priority === 'high') acc.highPriority++;
+      return acc;
+    }, { active: 0, pending: 0, resolved: 0, highPriority: 0 }),
+    [alerts]
+  );
 
   return (
-    <Grid container spacing={3} sx={{ mb: 3 }}>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Typography color="text.secondary" gutterBottom>
-              Alertes actives
-            </Typography>
-            <Typography variant="h4" color="error">
-              {active}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Typography color="text.secondary" gutterBottom>
-              En attente
-            </Typography>
-            <Typography variant="h4" color="warning.main">
-              {pending}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Typography color="text.secondary" gutterBottom>
-              Résolues
-            </Typography>
-            <Typography variant="h4" color="success.main">
-              {resolved}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Typography color="text.secondary" gutterBottom>
-              Priorité haute
-            </Typography>
-            <Typography variant="h4" color="error">
-              {highPriority}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 3, mb: 3 }}>
+      <Box>
+        <StatCard
+          title="Alertes actives"
+          value={counts.active}
+          color="error.main"
+        />
+      </Box>
+      <Box>
+        <StatCard
+          title="En attente"
+          value={counts.pending}
+          color="warning.main"
+        />
+      </Box>
+      <Box>
+        <StatCard
+          title="Résolues"
+          value={counts.resolved}
+          color="success.main"
+        />
+      </Box>
+      <Box>
+        <StatCard
+          title="Priorité haute"
+          value={counts.highPriority}
+          color="error.main"
+        />
+      </Box>
+    </Box>
   );
 };
 

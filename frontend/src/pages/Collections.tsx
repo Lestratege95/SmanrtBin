@@ -26,7 +26,8 @@ import {
   LocalShipping as TruckIcon,
   CheckCircle as CompletedIcon,
   Schedule as ScheduledIcon,
-  Error as ErrorIcon
+  Error as ErrorIcon,
+  Info as InfoIcon
 } from '@mui/icons-material';
 
 interface Collection {
@@ -103,7 +104,7 @@ const getStatusIcon = (status: Collection['status']) => {
     case 'cancelled':
       return <ErrorIcon />;
     default:
-      return null;
+      return <InfoIcon />;
   }
 };
 
@@ -114,8 +115,8 @@ const CollectionStats = ({ collections }: { collections: Collection[] }) => {
   const totalWeight = collections.reduce((acc, c) => acc + c.weight, 0);
 
   return (
-    <Grid container spacing={3} sx={{ mb: 3 }}>
-      <Grid item xs={12} sm={6} md={3}>
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 3, mb: 3 }}>
+      <Box>
         <Card>
           <CardContent>
             <Typography color="text.secondary" gutterBottom>
@@ -126,8 +127,8 @@ const CollectionStats = ({ collections }: { collections: Collection[] }) => {
             </Typography>
           </CardContent>
         </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
+      </Box>
+      <Box>
         <Card>
           <CardContent>
             <Typography color="text.secondary" gutterBottom>
@@ -138,8 +139,8 @@ const CollectionStats = ({ collections }: { collections: Collection[] }) => {
             </Typography>
           </CardContent>
         </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
+      </Box>
+      <Box>
         <Card>
           <CardContent>
             <Typography color="text.secondary" gutterBottom>
@@ -150,8 +151,8 @@ const CollectionStats = ({ collections }: { collections: Collection[] }) => {
             </Typography>
           </CardContent>
         </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
+      </Box>
+      <Box>
         <Card>
           <CardContent>
             <Typography color="text.secondary" gutterBottom>
@@ -162,8 +163,8 @@ const CollectionStats = ({ collections }: { collections: Collection[] }) => {
             </Typography>
           </CardContent>
         </Card>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 };
 
