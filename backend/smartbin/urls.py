@@ -1,5 +1,4 @@
 from django.urls import path, include
-from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, ZoneViewSet, SmartBinViewSet, CollectionViewSet,
@@ -21,7 +20,6 @@ router.register(r'waste-flows', WasteFlowViewSet)
 router.register(r'center-statistics', CenterStatisticsViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('tri-center/data-entry/', tri_center_data_entry, name='tri_center_data_entry'),
 ] 

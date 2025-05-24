@@ -2,6 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework.permissions import AllowAny
 from .models import User, Zone, SmartBin, Collection, Alert, CollectionRoute, BinReport, UserProfile, TriCenter, WasteFlow, CenterStatistics
 from .serializers import (
     UserSerializer, ZoneSerializer, SmartBinSerializer, CollectionSerializer,
@@ -22,10 +24,16 @@ from .filters import (
     CollectionRouteFilter, BinReportFilter, TriCenterFilter,
     WasteFlowFilter, CenterStatisticsFilter
 )
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 
 User = get_user_model()
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+
+class CustomTokenRefreshView(TokenRefreshView):
+    permission_classes = (AllowAny,)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -191,7 +199,7 @@ class StatisticsViewSet(viewsets.ViewSet):
 
 def tri_center_data_entry(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('http://localhost:3000/login')
     
     if not (request.user.is_staff or request.user.role == 'tri_center'):
         return HttpResponseForbidden("Vous n'avez pas les permissions nécessaires")
